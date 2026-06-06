@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Matematika Profesional</title>
+
+<style>
+:root{
+    --primary:#2563eb;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --text:#1e293b;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fafc);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:800px;
+}
+
+.card{
+    background:var(--card);
+    border-radius:20px;
+    padding:40px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+.title{
+    text-align:center;
+    font-size:2rem;
+    color:var(--text);
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#64748b;
+    margin-bottom:30px;
+}
+
+.start-screen,
+.quiz-screen,
+.finish-screen{
+    display:none;
+}
+
+.active{
+    display:block;
+}
+
+.progress-wrap{
+    margin-bottom:25px;
+}
+
+.progress-text{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+    color:#475569;
+}
+
+.progress{
+    width:100%;
+    height:12px;
+    background:#e2e8f0;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#2563eb,#60a5fa);
+}
+
+.question{
+    text-align:center;
+    font-size:2rem;
+    font-weight:bold;
+    color:var(--text);
+    margin:35px 0;
+}
+
+input{
+    width:100%;
+    padding:16px;
+    border:2px solid #dbeafe;
+    border-radius:12px;
+    font-size:1.2rem;
+    text-align:center;
+}
+
+input:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+.message{
+    text-align:center;
+    margin-top:15px;
+    min-height:28px;
+    font-weight:600;
+}
+
+.correct{
+    color:var(--success);
+}
+
+.wrong{
+    color:var(--danger);
+}
+
+.btn{
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:12px;
+    font-size:1rem;
+    cursor:pointer;
+    margin-top:20px;
+    transition:.2s;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:white;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+.btn-success{
+    background:var(--success);
+    color:white;
+}
+
+.btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.stats{
+    text-align:center;
+    margin-top:25px;
+    color:#475569;
+}
+
+.finish-title{
+    text-align:center;
+    font-size:2rem;
+    color:var(--success);
+    margin-bottom:15px;
+}
+
+.finish-text{
+    text-align:center;
+    color:#475569;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<div class="start-screen active" id="startScreen">
+    <h1 class="title">Kuis Matematika</h1>
+    <p class="subtitle">
+        750 Soal Bertingkat<br>
+        Penjumlahan • Perkalian • Pembagian • Campuran
+    </p>
+
+    <button class="btn btn-primary" onclick="startQuiz()">
+        Mulai
+    </button>
+</div>
+
+<div class="quiz-screen" id="quizScreen">
+
+    <div class="progress-wrap">
+        <div class="progress-text">
+            <span id="levelName"></span>
+            <span id="counter"></span>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="question" id="question"></div>
+
+    <input
+        type="number"
+        id="answer"
+        placeholder="Masukkan jawaban"
+    >
+
+    <div class="message" id="message"></div>
+
+    <button class="btn btn-primary" onclick="checkAnswer()">
+        Periksa Jawaban
+    </button>
+
+    <button
+        class="btn btn-success"
+        id="nextBtn"
+        onclick="nextQuestion()"
+        disabled>
+        Lanjut
+    </button>
+
+</div>
+
+<div class="finish-screen" id="finishScreen">
+    <h2 class="finish-title">🎉 Selamat!</h2>
+    <p class="finish-text">
+        Semua kuis telah berhasil diselesaikan.
+    </p>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const quizzes = [];
+
+function random(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function generateBasicAddition(){
+    for(let i=0;i<100;i++){
+        const a=random(1,10);
+        const b=random(1,10);
+
+        quizzes.push({
+            level:"Penjumlahan 1-10",
+            question:`${a} + ${b}`,
+            answer:a+b
+        });
+    }
+}
+
+function generateBasicMultiplication(){
+    for(let i=0;i<100;i++){
+        const a=random(1,10);
+        const b=random(1,10);
+
+        quizzes.push({
+            level:"Perkalian 1-10",
+            question:`${a} × ${b}`,
+            answer:a*b
+        });
+    }
+}
+
+function generateBasicDivision(){
+    for(let i=0;i<100;i++){
+
+        const b=random(1,10);
+        const result=random(1,10);
+        const a=b*result;
+
+        quizzes.push({
+            level:"Pembagian 1-10",
+            question:`${a} ÷ ${b}`,
+            answer:result
+        });
+    }
+}
+
+function generateMixedDigits(digits){
+
+    const min=Math.pow(10,digits-1);
+    const max=Math.pow(10,digits)-1;
+
+    for(let i=0;i<50;i++){
+
+        const op=random(1,3);
+
+        let a,b,ans,q;
+
+        if(op===1){
+
+            a=random(min,max);
+            b=random(min,max);
+
+            ans=a+b;
+            q=`${a} + ${b}`;
+
+        }else if(op===2){
+
+            a=random(min,max);
+            b=random(min,max);
+
+            ans=a*b;
+            q=`${a} × ${b}`;
+
+        }else{
+
+            b=random(min,max);
+
+            const result=random(min,max);
+
+            a=b*result;
+
+            ans=result;
+            q=`${a} ÷ ${b}`;
+        }
+
+        quizzes.push({
+            level:`Campuran ${digits} Digit`,
+            question:q,
+            answer:ans
+        });
+    }
+}
+
+generateBasicAddition();
+generateBasicMultiplication();
+generateBasicDivision();
+
+for(let digit=2; digit<=10; digit++){
+    generateMixedDigits(digit);
+}
+
+let current=0;
+
+function startQuiz(){
+
+    document.getElementById("startScreen").classList.remove("active");
+    document.getElementById("quizScreen").classList.add("active");
+
+    showQuestion();
+}
+
+function showQuestion(){
+
+    const q=quizzes[current];
+
+    document.getElementById("question").innerHTML=q.question;
+
+    document.getElementById("answer").value="";
+    document.getElementById("message").innerHTML="";
+    document.getElementById("nextBtn").disabled=true;
+
+    document.getElementById("counter").innerHTML=
+        `${current+1} / ${quizzes.length}`;
+
+    document.getElementById("levelName").innerHTML=q.level;
+
+    const percent=((current)/quizzes.length)*100;
+    document.getElementById("progressBar").style.width=
+        percent+"%";
+
+    document.getElementById("answer").focus();
+}
+
+function checkAnswer(){
+
+    const userAnswer=
+        Number(document.getElementById("answer").value);
+
+    const correctAnswer=
+        quizzes[current].answer;
+
+    const message=
+        document.getElementById("message");
+
+    if(userAnswer===correctAnswer){
+
+        message.innerHTML="✔ Jawaban Benar";
+        message.className="message correct";
+
+        document.getElementById("nextBtn").disabled=false;
+
+    }else{
+
+        message.innerHTML="✘ Jawaban Salah";
+        message.className="message wrong";
+    }
+}
+
+function nextQuestion(){
+
+    current++;
+
+    if(current>=quizzes.length){
+
+        document.getElementById("quizScreen")
+            .classList.remove("active");
+
+        document.getElementById("finishScreen")
+            .classList.add("active");
+
+        return;
+    }
+
+    showQuestion();
+}
+
+document.addEventListener("keypress",function(e){
+
+    if(e.key==="Enter"){
+
+        if(document.getElementById("nextBtn").disabled){
+            checkAnswer();
+        }else{
+            nextQuestion();
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
